@@ -153,17 +153,27 @@ chmod +x start-gateway.sh
 ./start-gateway.sh
 ```
 
-## 6. Connect to Exchanges
+## 6. Connect to Exchanges from hummingbot
 
-### a. Connect to Maya
+### a. Create maya wallet in gateway. When it asks for private key use mnemonic phrase 
+ 
+```bash
+gateway connect mayadex
+```
+- Which mayachain-based network do you want to connect to >>> mainnet
+- Do you want to continue to use node url 'https://midgard.mayachain.info' for mayachain-mainnet? >> Yes
+- Do you want to connect to mayachain-mainnet with one of your existing wallets on Gateway? (Yes/No) >>> No
+- Enter your mayachain-mainnet wallet private key >>> {Enter your mnemonic phrase}
 
-Use the following command and enter any Maya address (the address is not critical for this step):
+### b. Connect Maya exchange wrapper
+
+Use the following command and enter your Maya address (Make sure this matches the wallet configured above):
 
 ```bash
 connect maya
 ```
 
-### b. Connect to Hyperliquid Perpetual Exchange
+### c. Connect to Hyperliquid Perpetual Exchange
 
 Use the `connect` command with your Hyperliquid credentials:
 
