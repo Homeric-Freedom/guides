@@ -30,7 +30,7 @@ sudo ufw enable
 
 ## 3. Create Directory and Clone Repositories
 
-Set up a directory for Hummingbot and Gateway, and clone their respective repositories.
+Set up an `hbot` directory for Hummingbot and Gateway, and clone their repositories.
 
 ```bash
 mkdir -p hbot
@@ -41,7 +41,7 @@ git clone git@github.com:Homeric-Freedom/hummingbot.git
 
 ## 4. Prepare Hummingbot
 
-Configure and install Hummingbot by following these steps.
+Configure and install Hummingbot.
 
 ### a. Fetch and Checkout Hummingbot Branch
 
@@ -80,7 +80,7 @@ conda activate hummingbot
 
 Follow the Hummingbot initialization process to create a password.
 
-### g. Set Up Certificates
+### g. Set Up Certificates (use a passphrase without special characters)
 
 ```bash
 gateway generate-certs
@@ -88,7 +88,7 @@ gateway generate-certs
 
 ## 5. Prepare Gateway
 
-Configure and install Gateway by following these steps.
+Configure and install Gateway.
 
 ### a. Fetch and Checkout Gateway Branch
 
@@ -115,7 +115,8 @@ pnpm run setup
 
 ### d. Start Gateway with Concealed Passphrase
 To start the Gateway server securely without storing the passphrase in cleartext or exposing it in command-line arguments, use a Bash script that prompts for the passphrase interactively, concealing the input, and passes it via an environment variable.
-#### 1. Create `start-gateway.sh` in the gateway directory:
+
+#### 1. Create `start-gateway.sh` in `hbot` directory:
 
 ```bash
 #!/bin/bash
@@ -153,8 +154,6 @@ chmod +x start-gateway.sh
 ```
 
 ## 6. Connect to Exchanges
-
-Connect Hummingbot to supported exchanges.
 
 ### a. Connect to Maya
 
