@@ -189,8 +189,39 @@ Run the Maya v2 XEMM trading script with the desired configuration.
 
 Create a configuration file at `conf/scripts/maya_v2_xemm.yml` with your desired settings.
 
-### b. Run Hummingbot with the Script
+### b. create start-hbot.sh script in hummingbot's parent directory
 
+``` bash
+#!/bin/bash
+
+STARTUP_COMMAND="python bin/hummingbot_quickstart.py --script-conf maya_v2_xemm.yml --config-file-name maya_v2_xemm.py"
+SECRET_ENV_VARIABLE_NAME="CONFIG_PASSWORD"
+TARGET_DIRECTORY="hummingbot"
+
+# Change to the target directory
+cd "$TARGET_DIRECTORY" || { echo "Error: Failed to change to $TARGET_DIRECTORY directory."; exit 1; }
+
+# Prompt for secret securely (input is hidden, not stored in shell history or a file)
+read -s -p "Enter secret for $SECRET_ENV_VARIABLE_NAME: " SECRET_VALUE
+echo ""
+
+# Validate that a secret was entered
+if [ -z "$SECRET_VALUE" ]; then
+    echo "Error: No secret entered. Exiting."
+    exit 1
+fi
+
+# Export the secret as an environment variable
+export $SECRET_ENV_VARIABLE_NAME="$SECRET_VALUE"
+
+# Execute the startup command with variable substitution
+eval "$STARTUP_COMMAND"
+
+# Clear the environment variable for added security
+unset $SECRET_ENV_VARIABLE_NAME
+```
+
+### c. Execute the script:
 ```bash
-python bin/hummingbot_quickstart.py --script-conf maya_v2_xemm.yml --config-file-name maya_v2_xemm.py
+bash start-hbot.sh
 ```
