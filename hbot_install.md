@@ -2,6 +2,32 @@
 
 This guide provides step-by-step instructions for setting up Hummingbot with Gateway on a Linux system. Follow these steps to install dependencies, clone repositories, configure Hummingbot and Gateway, connect to exchanges, and run a trading script.
 
+## Table of Contents
+1. [Install System Packages and Dependencies](#1-install-system-packages-and-dependencies)
+2. [Configure Firewalls](#2-configure-firewalls)
+3. [Create Directory and Clone Repositories](#3-create-directory-and-clone-repositories)
+4. [Prepare Hummingbot](#4-prepare-hummingbot)
+   - [Fetch and Checkout Hummingbot Branch](#a-fetch-and-checkout-hummingbot-branch)
+   - [Run the Installation Script](#b-run-the-installation-script)
+   - [Activate the Hummingbot Environment](#c-activate-the-hummingbot-environment)
+   - [Compile Hummingbot Source Code](#d-compile-hummingbot-source-code)
+   - [Start Hummingbot](#e-start-hummingbot)
+   - [Initialize Hummingbot](#f-initialize-hummingbot)
+   - [Set Up Certificates](#g-set-up-certificates-use-a-passphrase-without-special-characters)
+5. [Prepare Gateway](#5-prepare-gateway)
+   - [Fetch and Checkout Gateway Branch](#a-fetch-and-checkout-gateway-branch)
+   - [Install and Build Gateway Dependencies](#b-install-and-build-gateway-dependencies)
+   - [Run Gateway Setup Script](#c-run-gateway-setup-script)
+   - [Start Gateway with Concealed Passphrase](#d-start-gateway-with-concealed-passphrase)
+6. [Connect to Exchanges from Hummingbot](#6-connect-to-exchanges-from-hummingbot)
+   - [Create Maya Wallet in gateway](#a-create-maya-wallet-in-gateway-when-it-asks-for-private-key-use-mnemonic-phrase)
+   - [Connect Maya Exchange Wrapper](#b-connect-maya-exchange-wrapper)
+   - [Connect to Hyperliquid Perpetual Exchange](#c-connect-to-hyperliquid-perpetual-exchange)
+   - [Verify Connections](#d-verify-connections)
+7. [Run Hummingbot Maya v2 XEMM Script](#7-run-hummingbot-maya-v2-xemm-script)
+   - [Create Configuration File](#a-create-configuration-file)
+   - [Run Hummingbot](#b-run-hummingbot)
+
 ## 1. Install System Packages and Dependencies
 
 Ensure your system has the necessary packages and tools installed.
@@ -30,7 +56,7 @@ sudo ufw enable
 
 ## 3. Create Directory and Clone Repositories
 
-Set up an `hbot` directory for Hummingbot and Gateway, and clone their repositories.
+Create an `hbot` directory and clone the repositories:
 
 ```bash
 mkdir -p hbot
@@ -47,6 +73,15 @@ Configure and install Hummingbot.
 
 ```bash
 cd hummingbot
+git fetch origin pull/95/head:pr-95
+git checkout pr-95
+git reset --hard origin/pr-95
+```
+
+If new code was pushed:  
+
+```bash
+git branch -D pr-95
 git fetch origin pull/95/head:pr-95
 git checkout pr-95
 ```
@@ -96,6 +131,12 @@ Configure and install Gateway.
 cd gateway
 git fetch origin pull/33/head:pr-33
 git checkout pr-33
+```
+If there have been updates to the PR branch, use:
+```bash
+git branch -D pr-33
+git fetch origin pull/33/head:pr-33
+pnpm build
 ```
 
 ### b. Install and Build Gateway Dependencies
@@ -153,9 +194,9 @@ chmod +x start-gateway.sh
 ./start-gateway.sh
 ```
 
-## 6. Connect to Exchanges from hummingbot
+## 6. Connect to Exchanges from Hummingbot
 
-### a. Create maya wallet in gateway. When it asks for private key use mnemonic phrase 
+### a. Create Maya Wallet in gateway (When It Asks for Private Key Use Mnemonic Phrase 
  
 ```bash
 gateway connect mayadex
@@ -165,13 +206,15 @@ gateway connect mayadex
 - Do you want to connect to mayachain-mainnet with one of your existing wallets on Gateway? (Yes/No) >>> No
 - Enter your mayachain-mainnet wallet private key >>> {Enter your mnemonic phrase}
 
-### b. Connect Maya exchange wrapper
+### b. Connect Maya Exchange Wrapper
 
 Use the following command and enter your Maya address (Make sure this matches the wallet configured above):
 
 ```bash
 connect maya
 ```
+
+> Currently, `connect maya` defaults to the first maya wallet configured in Gateway.
 
 ### c. Connect to Hyperliquid Perpetual Exchange
 
@@ -183,7 +226,7 @@ Use the `connect` command with your Hyperliquid credentials:
 
 > **Note**: Refer to the Hummingbot CLI entry in KeePass for credentials.
 
-### c. Verify Connections
+### d. Verify Connections
 
 Check the status of both connections using:
 
@@ -199,7 +242,71 @@ Run the Maya v2 XEMM trading script with the desired configuration.
 
 Create a configuration file at `conf/scripts/maya_v2_xemm.yml` with your desired settings.
 
-### b. Run Hummingbot with the Script
+```bash
+markets: {}
+candles_config: []
+controllers_config: []
+script_file_name: maya_v2_xemm.py
+maker_connector: maya
+maker_trading_pairs:
+# triangular pairs
+#- ETH-BTC
+#- ETH-WBTC
+#- RUNE-BTC
+#- RUNE-ETH
+#- RUNE-WBTC
+# ETH/stable pairs
+- BTC-sUSDC
+- BTC-sUSDT
+- ETH-sUSDC
+- ETH-sUSDT
+- RUNE-sUSDC
+- RUNE-sUSDT
+#- WBTC-sUSDC
+#- WBTC-sUSDT
+# ARB/stable pairs
+#- BTC-USDT
+#- ETH-USDT
+#- RUNE-USDT
+#- WBTC-USDT
+
+taker_connector: hyperliquid_perpetual
+taker_trading_pairs:
+# triangular pairs
+#- ETH-USD
+#- ETH-USD
+#- RUNE-USD
+#- RUNE-USD
+#- RUNE-USD
+# ETH/stable pairs
+- BTC-USD
+- BTC-USD
+- ETH-USD
+- ETH-USD
+- RUNE-USD
+- RUNE-USD
+#- BTC-USD
+#- BTC-USD
+# ARB/stable pairs
+#- BTC-USD
+#- ETH-USD
+#- RUNE-USD
+#- BTC-USD
+
+target_profitability: 0.006
+min_profitability: 0.0025
+max_profitability: 0.0098
+order_amount_quote: 220
+```
+
+### b. Run Hummingbot  
+
+#### 1. Within Hummingbot    
+
+```bash
+start --script maya_v2_xemm.yml --conf maya_v2_xemm.py
+````
+#### 2. With the Script in terminal
 
 ```bash
 python bin/hummingbot_quickstart.py --script-conf maya_v2_xemm.yml --config-file-name maya_v2_xemm.py
