@@ -136,12 +136,10 @@ If there have been updates to the PR branch, use:
 ```bash
 git branch -D pr-33
 git fetch origin pull/33/head:pr-33
-pnpm build
+pnpm install && pnpm refresh-templates && pnpm build
 ```
 
 ### b. Install and Build Gateway Dependencies
-
-Install dependencies defined in `requirements.txt`.
 
 ```bash
 pnpm install
@@ -202,8 +200,9 @@ chmod +x start-gateway.sh
 gateway connect mayadex
 ```
 - Which mayachain-based network do you want to connect to >>> mainnet
-- Do you want to continue to use node url 'https://midgard.mayachain.info' for mayachain-mainnet? >> Yes
-- Do you want to connect to mayachain-mainnet with one of your existing wallets on Gateway? (Yes/No) >>> No
+- Do you want to continue to use node url 'None' for mayachain-mainnet? >> Yes
+# NOTE: if you get the following then you need to delete your gateway/conf/wallets folder and hummingbot/conf/gateway_connections.json file
+- Do you want to connect to mayachain-mainnet with one of your existing wallets on Gateway? (Yes/No) >>> ctrl + c and delete the specified files. 
 - Enter your mayachain-mainnet wallet private key >>> {Enter your mnemonic phrase}
 
 ### b. Connect Maya Exchange Wrapper
@@ -304,10 +303,90 @@ order_amount_quote: 220
 #### 1. Within Hummingbot    
 
 ```bash
-start --script maya_v2_xemm.yml --conf maya_v2_xemm.py
+start --script maya_v2_xemm.py --conf maya_v2_xemm.yml
 ````
 #### 2. With the Script in terminal
 
 ```bash
 python bin/hummingbot_quickstart.py --script-conf maya_v2_xemm.yml --config-file-name maya_v2_xemm.py
 ```
+
+
+## 8. Run Hummingbot Maya v2 XEMM Script
+
+After repeating the `gateway connect thordex` and `gateway connect thor` steps (#6 above). Run the Thor v2 XEMM trading script with the desired configuration.
+
+### a. Create Configuration File
+
+Create a configuration file at `conf/scripts/thor_v2_xemm.yml` with your desired settings.
+
+```bash
+markets: {}
+candles_config: []
+controllers_config: []
+script_file_name: thor_v2_xemm.py
+maker_connector: thor
+maker_trading_pairs:
+# triangular pairs
+#- ETH-BTC
+#- ETH-WBTC
+#- RUNE-BTC
+#- RUNE-ETH
+#- RUNE-WBTC
+# ETH/stable pairs
+- BTC-ETH~USDC
+- BTC-ETH~USDT
+- ETH-ETH~USDC
+- ETH-ETH~USDT
+- RUNE-ETH~USDC
+- RUNE-ETH~USDT
+#- WBTC-ETH~USDC
+#- WBTC-ETH~USDT
+# ARB/stable pairs
+#- BTC-USDT
+#- ETH-USDT
+#- RUNE-USDT
+#- WBTC-USDT
+
+taker_connector: hyperliquid_perpetual
+taker_trading_pairs:
+# triangular pairs
+#- ETH-USD
+#- ETH-USD
+#- RUNE-USD
+#- RUNE-USD
+#- RUNE-USD
+# ETH/stable pairs
+- BTC-USD
+- BTC-USD
+- ETH-USD
+- ETH-USD
+- RUNE-USD
+- RUNE-USD
+#- BTC-USD
+#- BTC-USD
+# ARB/stable pairs
+#- BTC-USD
+#- ETH-USD
+#- RUNE-USD
+#- BTC-USD
+
+target_profitability: 0.006
+min_profitability: 0.0025
+max_profitability: 0.0098
+order_amount_quote: 220
+```
+
+### b. Run Hummingbot  
+
+#### 1. Within Hummingbot    
+
+```bash
+start --script thor_v2_xemm.py --conf thor_v2_xemm.yml
+````
+#### 2. With the Script in terminal
+
+```bash
+python bin/hummingbot_quickstart.py --script-conf thor_v2_xemm.yml --config-file-name thor_v2_xemm.py
+```
+
