@@ -73,17 +73,16 @@ Configure and install Hummingbot.
 
 ```bash
 cd hummingbot
-git fetch origin pull/95/head:pr-95
-git checkout pr-95
-git reset --hard origin/pr-95
+git fetch origin feat/hbot_with_thorchain
+git checkout feat/hbot_with_thorchain
 ```
 
 If new code was pushed:  
 
 ```bash
-git branch -D pr-95
-git fetch origin pull/95/head:pr-95
-git checkout pr-95
+git branch -D feat/hbot_with_thorchain
+git fetch origin feat/hbot_with_thorchain
+git checkout feat/hbot_with_thorchain
 ```
 
 ### b. Run the Installation Script
@@ -129,13 +128,13 @@ Configure and install Gateway.
 
 ```bash
 cd gateway
-git fetch origin pull/33/head:pr-33
-git checkout pr-33
+git fetch origin feat/naive_thorchain_on_gateway
+git checkout feat/naive_thorchain_on_gateway
 ```
 If there have been updates to the PR branch, use:
 ```bash
-git branch -D pr-33
-git fetch origin pull/33/head:pr-33
+git branch -D feat/naive_thorchain_on_gateway
+git fetch origin feat/naive_thorchain_on_gateway
 pnpm install && pnpm refresh-templates && pnpm build
 ```
 
