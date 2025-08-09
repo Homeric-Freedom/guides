@@ -30,12 +30,14 @@ This guide provides step-by-step instructions for setting up Hummingbot with Gat
 
 ## 1. Install System Packages and Dependencies
 
-Ensure your system has the necessary packages and tools installed.
+The following packages are required:
 
-- `build-essential`
-- Node.js 20+
-- Miniconda3
-- `pnpm` package manager
+| Package         | Description                               | Minimum Version |
+|-----------------|-------------------------------------------|-----------------|
+| build-essential | Essential tools for compiling software    | Latest          |
+| Node.js         | JavaScript runtime for Gateway            | 20.x            |
+| Miniconda3      | Python environment manager for Hummingbot | Latest          |
+| pnpm            | Package manager for Gateway dependencies  | Latest          |
 
 ```bash
 sudo apt update && sudo apt upgrade -y && sudo apt install -y build-essential
@@ -47,13 +49,28 @@ sudo npm install -g pnpm
 ```
 
 ## 2. Configure Firewalls
-Ensure that the firewall allows traffic on the necessary ports for Hummingbot and Gateway.
+
+The following firewall rules are required:
+
+| Source IP | Destination IP | Port  | Protocol | Purpose                           |
+|-----------|----------------|-------|----------|-----------------------------------|
+| 10.0.0.10 | Any            | 22    | TCP      | Allow SSH access for management   |
+| 127.0.0.1 | 127.0.0.1      | 15888 | TCP      | Allow local Gateway communication |
+
 ```bash
 sudo ufw allow from 10.0.0.10 to any port 22 proto tcp
 sudo ufw allow from 127.0.0.1 to 127.0.0.1 port 15888 proto tcp
 sudo ufw enable
 ```
 
+**Verify** the firewall configuration to ensure the rules are active:
+
+```bash
+sudo ufw status
+```
+
+> **Note**: Replace `10.0.0.10` with the IP address of the system or network allowed to access your server via SSH. Use `0.0.0.0/0` to allow all IPs, but this is less secure.
+ 
 ## 3. Create Directory and Clone Repositories
 
 Create an `hbot` directory and clone the repositories:
@@ -69,7 +86,7 @@ git clone git@github.com:Homeric-Freedom/hummingbot.git
 
 Configure and install Hummingbot.
 
-### a. Fetch and Checkout Hummingbot Branch
+### 4.1. Fetch and Checkout Hummingbot Branch
 
 ```bash
 cd hummingbot
@@ -86,7 +103,7 @@ git fetch origin pull/95/head:pr-95
 git checkout pr-95
 ```
 
-### b. Run the Installation Script
+### 4.2. Run the Installation Script
 
 ```bash
 ./install
