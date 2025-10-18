@@ -50,7 +50,7 @@ sudo npm install -g pnpm
 
 ## 2. Configure Firewall
 
-## 2.1 The following firewall rules are required:
+The following firewall rules are required:
 
 | Source IP | Destination IP | Port  | Protocol | Purpose                           |
 |-----------|----------------|-------|----------|-----------------------------------|
@@ -65,7 +65,7 @@ sudo ufw enable
 
 > **Note**: Replace `10.0.0.10` with the IP address of the system or network allowed to access your server via SSH. Use `0.0.0.0/0` to allow all IPs, but this is less secure.
 
-## 2.2 Enable logging
+Enable logging
 ```bash
 sudo ufw logging on
 sudo ufw reload
@@ -97,7 +97,7 @@ git clone git@github.com:Homeric-Freedom/hummingbot.git
 
 Configure and install Hummingbot.
 
-### 4.1 Fetch and Checkout Hummingbot Branch
+Fetch and Checkout Hummingbot Branch
 
 ```bash
 cd hummingbot
@@ -105,36 +105,34 @@ git fetch origin dev
 git checkout dev
 ```
 
-### 4.2 Run the Installation Script
+Run the Installation Script
 
 ```bash
 ./install
 ```
 
-### 4.3 Activate the Hummingbot Environment
+Activate the Hummingbot Environment
 
 ```bash
 source ~/.bashrc
 conda activate hummingbot
 ```
 
-### 4.4 Compile Hummingbot Source Code
+Compile Hummingbot Source Code
 
 ```bash
 ./compile
 ```
 
-### 4.5. Start Hummingbot
+Start Hummingbot
 
 ```bash
 ./start
 ```
 
-### 4.6. Initialize Hummingbot
-
 Follow the Hummingbot initialization process to create a password.
 
-### 4.7 Set Up Certificates, Using a Passphrase without Special Characters
+Set Up Certificates, Using a Passphrase without Special Characters
 
 ```bash
 gateway generate-certs
@@ -144,7 +142,7 @@ gateway generate-certs
 
 Configure and install Gateway.
 
-### 5.1. Fetch and Checkout Gateway Branch
+Fetch and Checkout Gateway Branch
 
 ```bash
 cd gateway
@@ -152,7 +150,7 @@ git fetch origin dev
 git checkout dev
 ```
 
-### 5.2 Install and Build Gateway Dependencies
+Install and Build Gateway Dependencies
 
 ```bash
 pnpm install
@@ -165,13 +163,14 @@ pnpm install
 pnpm refresh-templates
 pnpm build
 ```
-### 5.3 Run Gateway Setup Script
+Run Gateway Setup Script
 
 ```bash
 pnpm run setup
 ```
 
-### 5.4 Start Gateway with Concealed Passphrase
+Start Gateway with Concealed Passphrase
+
 To start the Gateway server securely without storing the passphrase in cleartext or exposing it in command-line arguments, use a Bash script that prompts for the passphrase interactively, concealing the input, and passes it via an environment variable.
 
 Create `start-gateway.sh` in `hbot` directory:
@@ -215,7 +214,7 @@ Run the script to start Gateway:
 
 ## 6. Connect to Exchanges from Hummingbot
 
-### a. Create Maya Wallet in gateway (When It Asks for Private Key Use Mnemonic Phrase) 
+Create Maya Wallet in gateway (When It Asks for Private Key Use Mnemonic Phrase) 
  
 ```bash
 gateway connect mayadex
@@ -226,7 +225,7 @@ gateway connect mayadex
 - Do you want to connect to mayachain-mainnet with one of your existing wallets on Gateway? (Yes/No) >>> ctrl + c and delete the specified files. 
 - Enter your mayachain-mainnet wallet private key >>> {Enter your mnemonic phrase}
 
-### b. Connect Maya Exchange Wrapper
+Connect Maya Exchange Wrapper
 
 Use the following command and enter your Maya address (Make sure this matches the wallet configured above):
 
@@ -236,7 +235,7 @@ connect maya
 
 > Currently, `connect maya` defaults to the first maya wallet configured in Gateway.
 
-### c. Connect to Hyperliquid Perpetual Exchange
+Connect to Hyperliquid Perpetual Exchange
 
 Use the `connect` command with your Hyperliquid credentials:
 
@@ -246,8 +245,6 @@ Use the `connect` command with your Hyperliquid credentials:
 
 > **Note**: Refer to the Hummingbot CLI entry in KeePass for credentials.
 
-### d. Verify Connections
-
 Check the status of both connections using:
 
 ```bash
@@ -255,10 +252,6 @@ balance
 ```
 
 ## 7. Run Hummingbot Maya v2 XEMM Script
-
-Run the Maya v2 XEMM trading script with the desired configuration.
-
-### a. Create Configuration File
 
 Create a configuration file at `conf/scripts/maya_v2_xemm.yml` with your desired settings.
 
@@ -299,14 +292,14 @@ routes: S:mayadex/swap:THOR.RUNE-BTC/BTC:40 S:hyperliquid_perpetual:BTC-USD
 token_aliases: THOR.RUNE=RUNE,BTC=BTC/BTC                      
 ```
 
-### b. Run Hummingbot  
+Run Hummingbot:
 
-#### 1. Within Hummingbot    
+Within Hummingbot    
 
 ```bash
 start --script maya_v2_xemm.py --conf maya_v2_xemm.yml
 ````
-#### 2. With the Script in terminal
+With the Script in terminal
 
 ```bash
 python bin/hummingbot_quickstart.py --script-conf maya_v2_xemm.yml --config-file-name maya_v2_xemm.py
