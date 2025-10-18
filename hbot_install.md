@@ -48,9 +48,9 @@ bash Miniconda3-latest-Linux-x86_64.sh
 sudo npm install -g pnpm
 ```
 
-## 2. Configure Firewalls
+## 2. Configure Firewall
 
-The following firewall rules are required:
+## 2.1 The following firewall rules are required:
 
 | Source IP | Destination IP | Port  | Protocol | Purpose                           |
 |-----------|----------------|-------|----------|-----------------------------------|
@@ -63,14 +63,25 @@ sudo ufw allow from 127.0.0.1 to 127.0.0.1 port 15888 proto tcp
 sudo ufw enable
 ```
 
+> **Note**: Replace `10.0.0.10` with the IP address of the system or network allowed to access your server via SSH. Use `0.0.0.0/0` to allow all IPs, but this is less secure.
+
+## 2.2 Enable logging
+```bash
+sudo ufw logging on
+sudo ufw reload
+```
+
 **Verify** the firewall configuration to ensure the rules are active:
 
 ```bash
-sudo ufw status
+sudo ufw status verbose
+```
+Monitor logging:
+```bash
+sudo journalctl -u ufw
 ```
 
-> **Note**: Replace `10.0.0.10` with the IP address of the system or network allowed to access your server via SSH. Use `0.0.0.0/0` to allow all IPs, but this is less secure.
- 
+
 ## 3. Create Directory and Clone Repositories
 
 Create an `hbot` directory and clone the repositories:
@@ -86,53 +97,44 @@ git clone git@github.com:Homeric-Freedom/hummingbot.git
 
 Configure and install Hummingbot.
 
-### 4.1. Fetch and Checkout Hummingbot Branch
+### 4.1 Fetch and Checkout Hummingbot Branch
 
 ```bash
 cd hummingbot
-git fetch origin pull/95/head:pr-95
-git checkout pr-95
-git reset --hard origin/pr-95
+git fetch origin dev
+git checkout dev
 ```
 
-If new code was pushed:  
-
-```bash
-git branch -D pr-95
-git fetch origin pull/95/head:pr-95
-git checkout pr-95
-```
-
-### 4.2. Run the Installation Script
+### 4.2 Run the Installation Script
 
 ```bash
 ./install
 ```
 
-### c. Activate the Hummingbot Environment
+### 4.3 Activate the Hummingbot Environment
 
 ```bash
 source ~/.bashrc
 conda activate hummingbot
 ```
 
-### d. Compile Hummingbot Source Code
+### 4.4 Compile Hummingbot Source Code
 
 ```bash
 ./compile
 ```
 
-### e. Start Hummingbot
+### 4.5. Start Hummingbot
 
 ```bash
 ./start
 ```
 
-### f. Initialize Hummingbot
+### 4.6. Initialize Hummingbot
 
 Follow the Hummingbot initialization process to create a password.
 
-### g. Set Up Certificates (use a passphrase without special characters)
+### 4.7 Set Up Certificates, Using a Passphrase without Special Characters
 
 ```bash
 gateway generate-certs
@@ -142,37 +144,37 @@ gateway generate-certs
 
 Configure and install Gateway.
 
-### a. Fetch and Checkout Gateway Branch
+### 5.1. Fetch and Checkout Gateway Branch
 
 ```bash
 cd gateway
-git fetch origin pull/33/head:pr-33
-git checkout pr-33
-```
-If there have been updates to the PR branch, use:
-```bash
-git branch -D pr-33
-git fetch origin pull/33/head:pr-33
-pnpm install && pnpm refresh-templates && pnpm build
+git fetch origin dev
+git checkout dev
 ```
 
-### b. Install and Build Gateway Dependencies
+### 5.2 Install and Build Gateway Dependencies
 
 ```bash
 pnpm install
 pnpm build
 ```
+If there have been updates to the branch, use:
 
-### c. Run Gateway Setup Script
+```
+pnpm install
+pnpm refresh-templates
+pnpm build
+```
+### 5.3 Run Gateway Setup Script
 
 ```bash
 pnpm run setup
 ```
 
-### d. Start Gateway with Concealed Passphrase
+### 5.4 Start Gateway with Concealed Passphrase
 To start the Gateway server securely without storing the passphrase in cleartext or exposing it in command-line arguments, use a Bash script that prompts for the passphrase interactively, concealing the input, and passes it via an environment variable.
 
-#### 1. Create `start-gateway.sh` in `hbot` directory:
+Create `start-gateway.sh` in `hbot` directory:
 
 ```bash
 #!/bin/bash
@@ -200,25 +202,27 @@ pnpm start
 unset GATEWAY_PASSPHRASE
 
 ```
-#### 2. Make the script executable:
+
+Make the script executable:
 ```bash
 chmod +x start-gateway.sh
 ```
-#### 3. Run the script to start Gateway:
+
+Run the script to start Gateway:
 ```bash
 ./start-gateway.sh
 ```
 
 ## 6. Connect to Exchanges from Hummingbot
 
-### a. Create Maya Wallet in gateway (When It Asks for Private Key Use Mnemonic Phrase 
+### a. Create Maya Wallet in gateway (When It Asks for Private Key Use Mnemonic Phrase) 
  
 ```bash
 gateway connect mayadex
 ```
 - Which mayachain-based network do you want to connect to >>> mainnet
 - Do you want to continue to use node url 'None' for mayachain-mainnet? >> Yes
-# NOTE: if you get the following then you need to delete your gateway/conf/wallets folder and hummingbot/conf/gateway_connections.json file
+### NOTE: if you get the following then you need to delete your gateway/conf/wallets folder and hummingbot/conf/gateway_connections.json file
 - Do you want to connect to mayachain-mainnet with one of your existing wallets on Gateway? (Yes/No) >>> ctrl + c and delete the specified files. 
 - Enter your mayachain-mainnet wallet private key >>> {Enter your mnemonic phrase}
 
@@ -259,60 +263,40 @@ Run the Maya v2 XEMM trading script with the desired configuration.
 Create a configuration file at `conf/scripts/maya_v2_xemm.yml` with your desired settings.
 
 ```bash
-markets: {}
-candles_config: []
-controllers_config: []
-script_file_name: maya_v2_xemm.py
-maker_connector: maya
-maker_trading_pairs:
-# triangular pairs
-#- ETH-BTC
-#- ETH-WBTC
-#- RUNE-BTC
-#- RUNE-ETH
-#- RUNE-WBTC
-# ETH/stable pairs
-- BTC-sUSDC
-- BTC-sUSDT
-- ETH-sUSDC
-- ETH-sUSDT
-- RUNE-sUSDC
-- RUNE-sUSDT
-#- WBTC-sUSDC
-#- WBTC-sUSDT
-# ARB/stable pairs
-#- BTC-USDT
-#- ETH-USDT
-#- RUNE-USDT
-#- WBTC-USDT
-
-taker_connector: hyperliquid_perpetual
-taker_trading_pairs:
-# triangular pairs
-#- ETH-USD
-#- ETH-USD
-#- RUNE-USD
-#- RUNE-USD
-#- RUNE-USD
-# ETH/stable pairs
-- BTC-USD
-- BTC-USD
-- ETH-USD
-- ETH-USD
-- RUNE-USD
-- RUNE-USD
-#- BTC-USD
-#- BTC-USD
-# ARB/stable pairs
-#- BTC-USD
-#- ETH-USD
-#- RUNE-USD
-#- BTC-USD
-
-target_profitability: 0.006
-min_profitability: 0.0025
-max_profitability: 0.0098
-order_amount_quote: 220
+##########################################                                      
+###   Multi Leg Arbitrage strategy config   ###                                 
+##########################################                                      
+                                                                                
+template_version: 6                                                             
+strategy: multi_leg_arb                                                         
+                                                                                
+# Minimum percentage profit to trigger trading                                  
+min_profit: 1.0                                                                 
+                                                                                
+# Maximum acceptable percentage loss                                            
+max_loss: 2.0                                                                   
+                                                                                
+# Optional default order amount                                                 
+order_amount: 5.0                                                               
+                                                                                
+# Routes string separated by commas, legs separated by spaces, params by :      
+# Expected format: side:connector:pair[:amount]                                 
+#                                                                               
+# Definitions:                                                                  
+#   side      = B (buy) or S (sell)                                             
+#   connector = valid exchange or connector name                                
+#   pair      = trading pair (e.g SOL-USDC)                                     
+#   amount    = optional; only used in the first leg                            
+#                                                                               
+# Example:                                                                      
+#   B:mexc:SOL-USDC:1 S:mexc:SOL-USDT, B:mexc:LINK-ETH:1 S:mexc:LINK-USDC       
+routes: S:mayadex/swap:THOR.RUNE-BTC/BTC:40 S:hyperliquid_perpetual:BTC-USD     
+  B:hyperliquid_perpetual:RUNE-USD,S:mayadex/swap:BTC/BTC-THOR.RUNE:0.0003      
+  S:hyperliquid_perpetual:RUNE-USD B:hyperliquid_perpetual:BTC-USD              
+                                                                                
+# Optional token aliases mapping (alias=TOKEN), used to normalize token names when
+# validating route continuity. Example maps RUNE.THOR to RUNE and BTC to BTC/BTC.
+token_aliases: THOR.RUNE=RUNE,BTC=BTC/BTC                      
 ```
 
 ### b. Run Hummingbot  
@@ -327,83 +311,3 @@ start --script maya_v2_xemm.py --conf maya_v2_xemm.yml
 ```bash
 python bin/hummingbot_quickstart.py --script-conf maya_v2_xemm.yml --config-file-name maya_v2_xemm.py
 ```
-
-
-## 8. Run Hummingbot Maya v2 XEMM Script
-
-After repeating the `gateway connect thordex` and `gateway connect thor` steps (#6 above). Run the Thor v2 XEMM trading script with the desired configuration.
-
-### a. Create Configuration File
-
-Create a configuration file at `conf/scripts/thor_v2_xemm.yml` with your desired settings.
-
-```bash
-markets: {}
-candles_config: []
-controllers_config: []
-script_file_name: thor_v2_xemm.py
-maker_connector: thor
-maker_trading_pairs:
-# triangular pairs
-#- ETH-BTC
-#- ETH-WBTC
-#- RUNE-BTC
-#- RUNE-ETH
-#- RUNE-WBTC
-# ETH/stable pairs
-- BTC-ETH~USDC
-- BTC-ETH~USDT
-- ETH-ETH~USDC
-- ETH-ETH~USDT
-- RUNE-ETH~USDC
-- RUNE-ETH~USDT
-#- WBTC-ETH~USDC
-#- WBTC-ETH~USDT
-# ARB/stable pairs
-#- BTC-USDT
-#- ETH-USDT
-#- RUNE-USDT
-#- WBTC-USDT
-
-taker_connector: hyperliquid_perpetual
-taker_trading_pairs:
-# triangular pairs
-#- ETH-USD
-#- ETH-USD
-#- RUNE-USD
-#- RUNE-USD
-#- RUNE-USD
-# ETH/stable pairs
-- BTC-USD
-- BTC-USD
-- ETH-USD
-- ETH-USD
-- RUNE-USD
-- RUNE-USD
-#- BTC-USD
-#- BTC-USD
-# ARB/stable pairs
-#- BTC-USD
-#- ETH-USD
-#- RUNE-USD
-#- BTC-USD
-
-target_profitability: 0.006
-min_profitability: 0.0025
-max_profitability: 0.0098
-order_amount_quote: 220
-```
-
-### b. Run Hummingbot  
-
-#### 1. Within Hummingbot    
-
-```bash
-start --script thor_v2_xemm.py --conf thor_v2_xemm.yml
-````
-#### 2. With the Script in terminal
-
-```bash
-python bin/hummingbot_quickstart.py --script-conf thor_v2_xemm.yml --config-file-name thor_v2_xemm.py
-```
-
